@@ -1,2 +1,2 @@
-# pydEcom website
+# pydEcom
 
