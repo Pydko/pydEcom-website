@@ -1,0 +1,91 @@
+package com.ecommerce.config;
+
+import com.ecommerce.entities.Category;
+import com.ecommerce.entities.Product;
+import com.ecommerce.entities.User;
+import com.ecommerce.repository.CategoryRepository;
+import com.ecommerce.repository.ProductRepository;
+import com.ecommerce.repository.UserRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
+@Component
+public class DataSeeder implements CommandLineRunner {
+
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public DataSeeder(CategoryRepository categoryRepository, ProductRepository productRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        // CATEGORIES
+        if (categoryRepository.count() == 0) {
+            List<Category> categories = Arrays.asList(
+                    new Category(null, "Brake System", "Brake pads, discs, calipers"),
+                    new Category(null, "Engine & Drivetrain", "Pistons, belts, gaskets"),
+                    new Category(null, "Suspension & Steering", "Shock absorbers, control arms"),
+                    new Category(null, "Filters & Fluids", "Oil filters, air filters"),
+                    new Category(null, "Electrical & Ignition", "Batteries, alternators"),
+                    new Category(null, "Body & Lighting", "Headlights, bumpers, mirrors"),
+                    new Category(null, "Cooling & Heating", "Radiators, water pumps"),
+                    new Category(null, "Wheels & Tires", "Rims, tires, hubcaps")
+            );
+            categoryRepository.saveAll(categories);
+            System.out.println("CATEGORY ADDED");
+        }
+
+        if (productRepository.count() == 0) {
+            List<Category> cats = categoryRepository.findAll();
+            // cats.get(0)=Brake, (1)=Engine, (2)=Suspension, (3)=Filters, (4)=Electrical, (5)=Body, (6)=Cooling, (7)=Wheels
+
+            List<Product> products = Arrays.asList(
+                    new Product(null, "Brake Pad Set", "High performance ceramic pads", new BigDecimal("850.00"), "http://localhost:8080/images/balata.jpg", cats.get(0), 50),
+                    new Product(null, "Brake Disc (Front)", "Ventilated front brake disc", new BigDecimal("1200.00"), "http://localhost:8080/images/disk.jpg", cats.get(0), 30),
+
+                    //new Product(null, "DSG Transmission", "7-speed dual clutch gearbox", new BigDecimal("45000.00"), "http://localhost:8080/images/dsg.jpg", cats.get(1), 2),
+                    new Product(null, "Engine Piston", "Standard size piston", new BigDecimal("750.00"), "http://localhost:8080/images/piston.jpg", cats.get(1), 20),
+                    new Product(null, "Water Pump", "Engine water pump", new BigDecimal("950.00"), "http://localhost:8080/images/devirdaim.jpg", cats.get(6), 15),
+
+                    new Product(null, "Castrol Engine Oil", "5W-30 Fully Synthetic Oil", new BigDecimal("650.00"), "http://localhost:8080/images/castrol-yag.jpg", cats.get(3), 100),
+                    new Product(null, "Transmission Fluid", "DSG Gearbox Oil", new BigDecimal("450.00"), "http://localhost:8080/images/sanzuman-yagi.jpg", cats.get(3), 40),
+
+                    new Product(null, "Alternator", "12V 90A Alternator", new BigDecimal("3500.00"), "http://localhost:8080/images/alternator.png", cats.get(4), 5),
+                    new Product(null, "Oxygen Sensor", "O2 Lambda Sensor", new BigDecimal("1100.00"), "http://localhost:8080/images/sensor.jpg", cats.get(4), 10),
+                    new Product(null, "Headlight Bulb", "H7 Halogen Bulb", new BigDecimal("150.00"), "http://localhost:8080/images/ampul.jpg", cats.get(4), 200),
+
+                    new Product(null, "Headlight Assembly", "LED Front Headlight (Left)", new BigDecimal("4500.00"), "http://localhost:8080/images/far.jpg", cats.get(5), 8),
+                    new Product(null, "AC Control Panel", "Digital Climate Control Unit", new BigDecimal("2500.00"), "http://localhost:8080/images/klima-paneli.jpeg", cats.get(6), 3),
+
+                    new Product(null, "Summer Tire", "205/55 R16 Performance Tire", new BigDecimal("2100.00"), "http://localhost:8080/images/lastik.jpg", cats.get(7), 40),
+                    new Product(null, "Alloy Rim", "16 inch Steel Rim", new BigDecimal("3200.00"), "http://localhost:8080/images/jant.jpg", cats.get(7), 16)
+            );
+
+            productRepository.saveAll(products);
+            System.out.println("PRODUCTS ADDED (8080 PORT)");
+        }
+
+        // ADMIN
+        if (!userRepository.existsByUsername("admin")) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setEmail("admin@carparts.com");
+            admin.setRole("ADMIN");
+            userRepository.save(admin);
+            System.out.println("ADMIN ADDED");
+        }
+    }
+}
