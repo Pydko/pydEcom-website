@@ -5,7 +5,6 @@ import { AuthProvider } from './context/AuthContext';
 import { FilterProvider } from './context/FilterContext';
 import { CartProvider } from './context/CartContext';
 import { Sidebar } from './components/Sidebar';
-// Navbar importunu SİLDİK
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { CartDrawer } from './components/CartDrawer'; 
